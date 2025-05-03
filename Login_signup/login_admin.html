@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../view_c/js/tailwind.js"></script>
+    <style>
+        body {
+            background: url('../image/online-job-search.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+        }
+    </style>
+    <link rel="stylesheet" href="../view_c/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../view_c/css/boxicons.min.css">
+    <script src="../view_c/js/axios.min.js"></script>
+    <script src="../view_c/js/bootstrap.min.js"></script>
+    <script src="../view_c/js/login_admin.js"></script>
+</head>
+<body class="flex justify-center items-center min-h-screen">
+
+    <!-- Back Button -->
+    <a href="../homepage.php" class="absolute top-4 left-4 w-9 h-9 flex items-center justify-center bg-white/80 rounded-full shadow hover:bg-white z-10">
+        <img src="../image/back.png" alt="Back" class="w-4 h-4">
+    </a>
+
+    <!-- Main Container -->
+    <div class="bg-white/90 rounded-lg shadow-lg flex flex-col md:flex-row w-full max-w-4xl">
+
+        <!-- Left Panel -->
+        <div class="flex flex-col justify-center items-center p-8 md:w-1/2 bg-gray-100 border-r">
+            <img src="../image/logo.png" alt="Logo" class="w-72 h-28 object-contain mb-4">
+            <p class="text-center text-xl font-semibold">
+                Employment Opportunities for College Students at OMSC — Mamburao Campus
+            </p>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="flex flex-col justify-center items-center p-8 md:w-1/2">
+            <h2 class="text-2xl font-bold mb-6 text-center">Admin Log In</h2>
+
+            <form class="w-full space-y-4">
+                <!-- Email Input -->
+                <div class="input-group">
+                    <label for="email" class="text-sm font-medium">Email</label>
+                    <input type="email" id="email" name="email" required class="w-full p-3 border rounded-lg"/>
+                </div>
+
+                <!-- Password Input -->
+                <div class="input-group">
+                    <label for="password" class="text-sm font-medium">Password</label>
+                    <input type="password" id="password" name="password" required class="w-full p-3 border rounded-lg"/>
+                </div>
+
+                <!-- Submit Button -->
+    
+                <button type="button" onclick="validateLogin()" class="w-full py-3 bg-purple-700 text-white rounded hover:bg-purple-800 transition">Login</button>
+            </form>
+        </div>
+    </div>
+    </body>
+</html>

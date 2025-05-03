@@ -1,0 +1,124 @@
+body {
+    font-family: 'Roboto Slab', serif;
+    background-color: white;
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 40px 80px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    user-select: none;
+  }
+  .logo .e {
+    font-weight: bold;
+    font-size: 40px;
+    color: #8B8BE6;
+  }
+  .logo .c {
+    font-weight: bold;
+    font-size: 40px;
+    color: #00E676;
+  }
+  .logo .s {
+    font-weight: bold;
+    font-size: 40px;
+    color: #0066FF;
+  }
+  .logo svg {
+    width: 28px;
+    height: 28px;
+    stroke: #FF9800;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+  }
+  .seal {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+  }
+  h2 {
+    color: #8b8bf7;
+    font-weight: 600;
+    font-size: 1.75rem;
+    line-height: 1.3;
+  }
+  p {
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+  }
+  details {
+    border: 1px solid #d1d5db;
+    max-width: 280px;
+    font-family: inherit;
+    font-size: 16px;
+  }
+  summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary svg {
+    width: 20px;
+    height: 20px;
+    stroke: black;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    transition: transform 0.3s ease;
+  }
+  details[open] summary svg {
+    transform: rotate(180deg);
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid #d1d5db;
+  }
+  ul li {
+    border-top: 1px solid #d1d5db;
+    padding: 8px 0;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+  }
+  ul li:hover {
+    background-color: #f3f4f6;
+  }
+  ul li a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .image-container {
+    flex-grow: 1;
+    max-width: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .image-container img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
