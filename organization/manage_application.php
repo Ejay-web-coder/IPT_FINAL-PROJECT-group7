@@ -6,6 +6,17 @@
   <title>Manage Application</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <script>
+    function showModal(action, applicationId) {
+      const modal = document.getElementById(action + '-modal-' + applicationId);
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal(action, applicationId) {
+      const modal = document.getElementById(action + '-modal-' + applicationId);
+      modal.classList.add('hidden');
+    }
+  </script>
 </head>
 <body class="bg-white font-sans">
 <?php
@@ -28,72 +39,111 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     </nav>
   </header>
 
-  <main class="px-20 mt-6">
-    <table class="w-full border text-sm">
-      <thead class="bg-gray-200 text-left text-xs font-semibold text-gray-900">
-        <tr>
-          <th class="border px-3 py-2">Student Name</th>
-          <th class="border px-3 py-2">Resume</th>
-          <th class="border px-3 py-2">Application Date</th>
-          <th class="border px-3 py-2">Status</th>
-          <th class="border px-3 py-2">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="border">
-          <td class="px-3 py-2">Chrisnaire Jake Allado</td>
-          <td class="px-3 py-2 text-blue-500 flex items-center gap-1">
-            <i class="fas fa-paperclip"></i>
-            <a href="#" class="hover:underline">View Resume</a>
-          </td>
-          <td class="px-3 py-2">March 30, 2025</td>
-          <td class="px-3 py-2">Pending</td>
-          <td class="px-3 py-2">
-            <label class="inline-flex items-center gap-2">
-              <input type="checkbox" class="w-4 h-4 text-emerald-500 border-gray-300 rounded" checked>
-              <span>Approved</span>
-            </label>
-          </td>
-        </tr>
+  <?php
+session_start();
+include '../controllers/connection.php';
 
-        <!-- Duplicate row -->
-        <tr class="border">
-          <td class="px-3 py-2">Chrisnaire Jake Allado</td>
-          <td class="px-3 py-2 text-blue-500 flex items-center gap-1">
-            <i class="fas fa-paperclip"></i>
-            <a href="#" class="hover:underline">View Resume</a>
-          </td>
-          <td class="px-3 py-2">March 30, 2025</td>
-          <td class="px-3 py-2">Pending</td>
-          <td class="px-3 py-2">
-            <label class="inline-flex items-center gap-2">
-              <input type="checkbox" class="w-4 h-4 text-emerald-500 border-gray-300 rounded" checked>
-              <span>Approved</span>
-            </label>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+// OPTIONAL: Filter applications only from jobs posted by the current organization
+// $org_id = $_SESSION['organization_id'];
 
-    <div class="flex justify-end gap-4 mt-4">
-      <button class="bg-emerald-400 text-white font-bold rounded-full px-5 py-2 hover:bg-emerald-500 transition">
-        Approve
-      </button>
-      <button class="bg-red-400 text-white font-bold rounded-full px-5 py-2 hover:bg-red-500 transition">
-        Reject
-      </button>
-    </div>
-  </main>
-  <?php if ($showModal): ?>
-<div class="fixed inset-0 bg-black bg-opacity-30 z-50"></div>
-<div class="fixed top-1/2 left-1/2 w-80 bg-white border-2 border-blue-500 rounded-lg p-6 transform -translate-x-1/2 -translate-y-1/2 z-50 text-center">
-  <div class="text-4xl text-black mb-4"><i class="fas fa-sign-out-alt"></i></div>
-  <p class="text-sm mb-6">Are you sure you want to log out?</p>
-  <div class="flex justify-center gap-4">
-    <form method="post"><input type="submit" name="logout" value="Logout" class="text-blue-600 font-bold" /></form>
-    <form method="get"><input type="submit" value="Cancel" class="bg-blue-200 px-4 py-1 rounded font-bold" /></form>
+$query = "SELECT 
+            a.id AS application_id,
+            a.resume_path,
+            a.status,
+            a.applied_at,
+            s.name AS student_name,
+            s.email,
+            s.phone,
+            j.job_title,
+            j.company_name
+          FROM applications a
+          JOIN signup_students s ON a.student_id = s.student_id
+          JOIN jobs_list j ON a.job_id = j.id
+          ORDER BY a.applied_at DESC";
+
+$result = $conn->query($query);
+?>
+
+  <div class="max-w-6xl mx-auto py-10 px-4">
+    <h1 class="text-2xl font-bold mb-6">Pending Job Applications</h1>
+
+    <?php if ($result && $result->num_rows > 0): ?>
+      <div class="grid gap-6">
+        <?php while ($app = $result->fetch_assoc()): ?>
+        <div class="bg-white rounded shadow p-6">
+          <h2 class="text-lg font-semibold"><?= htmlspecialchars($app['student_name']) ?> applied for <span class="text-orange-600"><?= htmlspecialchars($app['job_title']) ?></span></h2>
+          <p class="text-sm text-gray-600">Company: <?= htmlspecialchars($app['company_name']) ?> | Applied on: <?= htmlspecialchars($app['applied_at']) ?></p>
+          <p class="text-sm mt-2">Email: <?= htmlspecialchars($app['email']) ?> | Phone: <?= htmlspecialchars($app['phone']) ?></p>
+          <p class="text-sm mt-2">Resume: 
+            <a href="../uploads/resumes/<?= urlencode($app['resume_path']) ?>" target="_blank" class="text-blue-600 underline">View</a>
+          </p>
+          <p class="mt-2 text-sm font-medium">Status: 
+            <span class="<?= $app['status'] === 'pending' ? 'text-yellow-600' : ($app['status'] === 'approved' ? 'text-green-600' : 'text-red-600') ?>">
+              <?= ucfirst($app['status']) ?>
+            </span>
+          </p>
+
+          <?php if ($app['status'] === 'pending'): ?>
+            <form action="../controllers/update_application.php" method="post" class="flex gap-2 mt-4">
+              <input type="hidden" name="application_id" value="<?= $app['application_id'] ?>">
+              <button type="button" onclick="showModal('approve', <?= $app['application_id'] ?>)" class="bg-green-500 text-white px-4 py-1 rounded">Approve</button>
+              <button type="button" onclick="showModal('reject', <?= $app['application_id'] ?>)" class="bg-red-500 text-white px-4 py-1 rounded">Reject</button>
+            </form>
+          <?php endif; ?>
+        </div>
+
+       <!-- Approve Modal -->
+<div id="approve-modal-<?= $app['application_id'] ?>" class="fixed inset-0 bg-black bg-opacity-30 z-50 hidden">
+  <div class="fixed top-1/2 left-1/2 w-80 bg-white border-2 border-blue-500 rounded-lg p-6 transform -translate-x-1/2 -translate-y-1/2 z-50 text-center">
+    <h3 class="text-lg font-bold">Approve Application</h3>
+    <p class="text-sm mb-4">Add a message for the student:</p>
+    <form action="../controllers/update_application.php" method="post">
+      <textarea name="message" class="w-full h-24 p-2 border border-gray-300 rounded-md" placeholder="Your message to the student"></textarea>
+      <input type="hidden" name="application_id" value="<?= $app['application_id'] ?>">
+      <input type="hidden" name="status" value="approved">
+      <div class="flex justify-center gap-4 mt-4">
+        <button type="submit" class="bg-green-500 text-white px-4 py-1 rounded">Submit</button>
+        <button type="button" onclick="closeModal('approve', <?= $app['application_id'] ?>)" class="bg-gray-300 px-4 py-1 rounded">Cancel</button>
+      </div>
+    </form>
   </div>
 </div>
-<?php endif; ?>
+
+<!-- Reject Modal -->
+<div id="reject-modal-<?= $app['application_id'] ?>" class="fixed inset-0 bg-black bg-opacity-30 z-50 hidden">
+  <div class="fixed top-1/2 left-1/2 w-80 bg-white border-2 border-blue-500 rounded-lg p-6 transform -translate-x-1/2 -translate-y-1/2 z-50 text-center">
+    <h3 class="text-lg font-bold">Reject Application</h3>
+    <p class="text-sm mb-4">Add a message for the student:</p>
+    <form action="../controllers/update_application.php" method="post">
+      <textarea name="message" class="w-full h-24 p-2 border border-gray-300 rounded-md" placeholder="Your message to the student"></textarea>
+      <input type="hidden" name="application_id" value="<?= $app['application_id'] ?>">
+      <input type="hidden" name="status" value="rejected">
+      <div class="flex justify-center gap-4 mt-4">
+        <button type="submit" class="bg-red-500 text-white px-4 py-1 rounded">Submit</button>
+        <button type="button" onclick="closeModal('reject', <?= $app['application_id'] ?>)" class="bg-gray-300 px-4 py-1 rounded">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+        <?php endwhile; ?>
+      </div>
+    <?php else: ?>
+      <p class="text-gray-500">No applications found.</p>
+    <?php endif; ?>
+  </div>
+  </main>
+  <?php if ($showModal): ?>
+    <div class="fixed inset-0 bg-black bg-opacity-30 z-50"></div>
+    <div class="fixed top-1/2 left-1/2 w-80 bg-white border-2 border-blue-500 rounded-lg p-6 transform -translate-x-1/2 -translate-y-1/2 z-50 text-center">
+      <div class="text-4xl text-black mb-4"><i class="fas fa-sign-out-alt"></i></div>
+      <p class="text-sm mb-6">Are you sure you want to log out?</p>
+      <div class="flex justify-center gap-4">
+        <form method="post"><input type="submit" name="logout" value="Logout" class="text-blue-600 font-bold" /></form>
+        <form method="get"><input type="submit" value="Cancel" class="bg-blue-200 px-4 py-1 rounded font-bold" /></form>
+      </div>
+    </div>
+  <?php endif; ?>
 </body>
 </html>

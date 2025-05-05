@@ -72,7 +72,24 @@
     </nav>
   </header>
 
-
+  <?php
+$showModal = isset($_GET['showLogout']) && $_GET['showLogout'] === 'true';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
+  header("Location: ../homepage.php"); exit;
+}
+?>
+  <header class="flex justify-between items-center bg-white shadow px-6 py-4">
+  <div class="text-4xl font-extrabold">
+    <img src="../image/logo.png" alt="" class="w-20 h-auto"> <!-- Adjusted image size -->
+  </div>
+    <nav class="text-sm font-medium space-x-6">
+      <a href="Job_Listing.php">Job Listing</a>
+      <a href="Requirements.php">Requirements</a>
+      <a href="My_Application.php">My Applications</a>
+      <a href="Profile_Resume.php" class="bg-orange-500 text-white px-4 py-1 rounded-md">Profile/Resume</a>
+      <a href="Notification.php">Notifications</a>
+      <a href="?showLogout=true" class="font-bold">Logout</a>
+    </nav>
 <?php if ($showModal): ?>
 <div class="fixed inset-0 bg-black bg-opacity-30 z-50"></div>
 <div class="fixed top-1/2 left-1/2 w-80 bg-white border-2 border-blue-500 rounded-lg p-6 transform -translate-x-1/2 -translate-y-1/2 z-50 text-center">

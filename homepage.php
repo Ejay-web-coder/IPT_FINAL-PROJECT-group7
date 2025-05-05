@@ -143,7 +143,7 @@
       width="80"
       height="80"
     />
-    <img alt="Seal of Occidental Mindoro State College, circular emblem with yellow and blue colors" class="img-fluid" height="80" src="https://storage.googleapis.com/a1aa/image/23a8b205-cadc-45f0-bcc5-ccc23b858546.jpg" width="80" />
+    <img alt="Seal of Occidental Mindoro State College, circular emblem with yellow and blue colors" class="img-fluid" height="80" src="image/omsc-logo.jpeg" width="80" />
   </header>
   <main class="container d-flex flex-column flex-md-row align-items-center align-items-md-start justify-content-between gap-4 px-4 px-md-5">
     <section class="flex-grow-1" style="max-width: 28rem;">

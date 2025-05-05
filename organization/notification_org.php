@@ -27,39 +27,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
       <a href="?showLogout=true" class="font-bold">Logout</a>
     </nav>
   </header>
+  <?php
+session_start();
+include '../../controllers/connection.php';
 
-  <main class="px-6 md:px-20 pb-20">
-    <section class="border border-gray-300 max-w-2xl mx-auto p-6 mt-6">
-      <h2 class="text-xl mb-4 font-semibold">Notifications</h2>
+// Assume you're storing org ID in session after login
+$org_id = $_SESSION['org_id']; // Update based on your session name
 
-      <div class="flex justify-between items-center text-sm font-normal border-b border-black pb-2 mb-4">
-        <div class="flex items-center gap-2 text-blue-500">
-          <a href="#" class="flex items-center gap-1">
-            Today 
-            <span class="bg-blue-500 text-white text-xs font-bold w-4 h-4 flex items-center justify-center rounded-full">3</span>
-          </a>
+$query = $conn->prepare("SELECT n.*, j.job_title 
+                         FROM notifications n 
+                         JOIN jobs_list j ON n.job_id = j.id 
+                         WHERE n.organization_id = ? 
+                         ORDER BY n.created_at DESC");
+$query->bind_param("i", $org_id);
+$query->execute();
+$result = $query->get_result();
+?>
+  <h2 class="text-2xl font-semibold mb-6">Notifications</h2>
+
+  <?php if ($result->num_rows > 0): ?>
+    <div class="space-y-4">
+      <?php while ($row = $result->fetch_assoc()): ?>
+        <div class="bg-white p-4 rounded shadow">
+          <h3 class="text-lg font-bold text-blue-600">Job: <?= htmlspecialchars($row['job_title']) ?></h3>
+          <p class="text-gray-700 mt-2"><?= nl2br(htmlspecialchars($row['message'])) ?></p>
+          <p class="text-sm text-gray-500 mt-1">Sent on: <?= $row['created_at'] ?></p>
         </div>
-        <div class="flex gap-6 text-black">
-          <span>Previous</span>
-          <span>Mark as read</span>
-          <a href="#" class="text-red-600">Clear all</a>
-        </div>
-      </div>
+      <?php endwhile; ?>
+    </div>
+  <?php else: ?>
+    <p class="text-gray-500">No notifications at the moment.</p>
+  <?php endif; ?>
 
-      <div class="flex items-center gap-6 mb-6">
-        <span class="w-4 h-4 bg-blue-900 rounded-full"></span>
-        <img src="https://placehold.co/60x60/png?text=7-Eleven+Logo" alt="7-Eleven logo" class="w-14 h-14 rounded-full border border-gray-300 bg-white object-contain">
-        <p class="text-base m-0">Congratulations! You've been selected for an interview.</p>
-      </div>
-
-      <hr class="border-t border-black mb-6" />
-
-      <div class="flex items-center gap-6 text-gray-600">
-        <img src="https://placehold.co/60x60/png?text=BEPER+Logo" alt="BEPER logo" class="w-14 h-14 rounded-full border border-gray-300 bg-white object-contain">
-        <p class="text-base m-0">We're sorry, this position has been filled.</p>
-      </div>
-    </section>
-  </main>
   <?php if ($showModal): ?>
 <div class="fixed inset-0 bg-black bg-opacity-30 z-50"></div>
 <div class="fixed top-1/2 left-1/2 w-80 bg-white border-2 border-blue-500 rounded-lg p-6 transform -translate-x-1/2 -translate-y-1/2 z-50 text-center">

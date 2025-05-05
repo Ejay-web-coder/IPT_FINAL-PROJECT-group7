@@ -12,7 +12,7 @@ $email = $data["uname"];
 $password = $data["pword"];
 
 //SQL query : SELECT
-$sql = "SELECT * FROM users WHERE email = '$email' AND password = '$password'";
+$sql = "SELECT * FROM admin_login WHERE email = '$email' AND password = '$password'";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {

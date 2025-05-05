@@ -25,7 +25,7 @@
     <!-- Right Side -->
     <div class="p-8 md:w-1/2 flex flex-col justify-center">
       <h2 class="text-2xl font-bold text-center mb-6">Student Login</h2>
-      <form action="login_Student.php" method="POST" class="space-y-4">
+      <form action="" method="POST" class="space-y-4">
         <div>
           <label for="email" class="block mb-1 font-medium">Email</label>
           <input type="email" id="email" name="email" required class="w-full p-3 border rounded">
@@ -41,23 +41,29 @@
   </div>
 
 <?php
-include '../connection/db_students_login-signup.php';
-session_start();
+include '../controllers/connection.php';
+session_start(); // Start the session
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $email = $_POST['email'];
   $password = $_POST['password'];
 
-  $stmt = $conn->prepare("SELECT password FROM students WHERE email = ?");
+  // Prepare and execute the statement
+  $stmt = $conn->prepare("SELECT * FROM signup_students WHERE email = ?");
   $stmt->bind_param("s", $email);
   $stmt->execute();
-  $stmt->store_result();
+  $result = $stmt->get_result();
 
-  if ($stmt->num_rows > 0) {
-    $stmt->bind_result($hashed_password);
-    $stmt->fetch();
-    if (password_verify($password, $hashed_password)) {
-      $_SESSION['email'] = $email;
+  // Check if user exists
+  if ($result->num_rows > 0) {
+    $user = $result->fetch_assoc();
+    // Verify the password
+    if (password_verify($password, $user['password'])) {
+      // Store user data in session
+      $_SESSION['student_id'] = $user['student_id']; // Store student ID
+      $_SESSION['name'] = $user['name']; // Store student name
+      $_SESSION['email'] = $user['email']; // Store student email
+      // Redirect to job listing page
       header("Location: ../students/Job_Listing.php");
       exit();
     } else {
@@ -67,9 +73,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     echo "<script>alert('No user found with that email.');</script>";
   }
 
+  // Close the statement and connection
   $stmt->close();
   $conn->close();
 }
 ?>
+</body>
+</html>
 </body>
 </html>

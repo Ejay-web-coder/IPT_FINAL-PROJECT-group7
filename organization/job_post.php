@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     </nav>
   </header>
 <?php
-include '../connection/db_job_list.php';
+include '../controllers/connection.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['update_job'])) {
@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $job_description = $_POST['job_description'];
             $deadline = $_POST['deadline'];
 
-            $update_stmt = $conn->prepare("UPDATE jobs SET job_title = ?, company_name = ?, job_type = ?, location = ?, salary = ?, job_description = ?, deadline = ? WHERE id = ?");
+            $update_stmt = $conn->prepare("UPDATE jobs_list SET job_title = ?, company_name = ?, job_type = ?, location = ?, salary = ?, job_description = ?, deadline = ? WHERE id = ?");
             $update_stmt->bind_param("sssssssi", $job_title, $company_name, $job_type, $location, $salary, $job_description, $deadline, $job_id);
 
             if ($update_stmt->execute()) {
@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['delete_job'])) {
         if (isset($_POST['job_id'])) {
             $job_id = $_POST['job_id'];
-            $delete_stmt = $conn->prepare("DELETE FROM jobs WHERE id = ?");
+            $delete_stmt = $conn->prepare("DELETE FROM jobs_list WHERE id = ?");
             $delete_stmt->bind_param("i", $job_id);
 
             if ($delete_stmt->execute()) {
@@ -83,13 +83,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $job_description = $_POST['job_description'];
             $deadline = $_POST['deadline'];
 
-            $stmt = $conn->prepare("INSERT INTO jobs (job_title, company_name, job_type, location, salary, job_description, deadline) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssssss", $job_title, $company_name, $job_type, $location, $salary, $job_description, $deadline);
-
+            $status = 'pending';
+            $stmt = $conn->prepare("INSERT INTO jobs_list (job_title, company_name, job_type, location, salary, job_description, deadline, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssssss", $job_title, $company_name, $job_type, $location, $salary, $job_description, $deadline, $status);
+            
+            $show_modal = false;
+            $modal_message = "";
+            
             if ($stmt->execute()) {
-                header("Location: " . $_SERVER['PHP_SELF']);
-                exit();
-            } else {
+                $show_modal = true;
+                $modal_message = "Please wait for the approval for your vacant job.";
+            }
+             else {
                 echo "Error: " . $stmt->error;
             }
             $stmt->close();
@@ -99,11 +104,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-$result = $conn->query("SELECT * FROM jobs");
+$result = $conn->query("SELECT * FROM jobs_list WHERE status = 'approved'");
 if (!$result) {
     die("Query failed: " . $conn->error);
 }
 ?>
+<?php if (isset($show_modal) && $show_modal): ?>
+<div id="approvalModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white p-6 rounded shadow-md max-w-md w-full">
+    <h3 class="text-lg font-bold mb-2">Job Submission Received</h3>
+    <p class="mb-4"><?php echo $modal_message; ?></p>
+    <button onclick="document.getElementById('approvalModal').style.display='none'" class="px-4 py-2 bg-blue-500 text-white rounded">OK</button>
+  </div>
+</div>
+<?php endif; ?>
 
 <!-- Job Form -->
 <form action="" method="POST" class="max-w-lg mx-auto bg-white p-6 border rounded shadow space-y-4 mt-10">

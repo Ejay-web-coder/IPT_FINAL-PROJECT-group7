@@ -31,27 +31,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     </nav>
   </header>
 
-<main class="max-w-3xl mx-auto px-4 pb-12 space-y-8">
   <?php
-    $apps = [
-      ["title" => "Store Assistant", "org" => "7-Eleven", "status" => "✅ Submitted (March 2, 2025)", "cancel" => true],
-      ["title" => "Sales Associate", "org" => "BEPER", "status" => "🟡 Under Review", "cancel" => true],
-      ["title" => "Food Delivery Driver", "org" => "Local Business", "status" => "❌ Rejected (Lacking experience)", "cancel" => false],
-    ];
-    foreach ($apps as $app): ?>
-    <section class="border border-gray-300 p-6 bg-white shadow text-sm leading-tight">
-      <ul class="list-disc pl-5 space-y-1">
-        <li><strong>Job Title:</strong> <?= $app['title'] ?></li>
-        <li>Company/Organization: <?= $app['org'] ?></li>
-        <li>Status: <?= $app['status'] ?></li>
-        <li>Action: 🔍 <a href="#" class="text-blue-500">View Details</a></li>
-        <?php if ($app['cancel']): ?>
-          <li class="text-red-600">❌ Cancel Application</li>
-        <?php endif; ?>
-      </ul>
-    </section>
-  <?php endforeach; ?>
-</main>
+session_start();
+include '../controllers/connection.php';
+
+$student_id = $_SESSION['student_id'] ?? null;
+
+if (!$student_id) {
+    echo "<p>Please log in to view your applications.</p>";
+    exit;
+}
+
+$query = "SELECT 
+            a.resume_path,
+            a.status,
+            a.applied_at,
+            j.job_title,
+            j.company_name,
+            j.location,
+            j.salary
+          FROM applications a
+          JOIN jobs_list j ON a.job_id = j.id
+          WHERE a.student_id = ?
+          ORDER BY a.applied_at DESC";
+
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $student_id);
+$stmt->execute();
+$result = $stmt->get_result();
+?>
+
+  <div class="max-w-6xl mx-auto py-10 px-4">
+    <h1 class="text-2xl font-bold mb-6">My Job Applications</h1>
+
+    <?php if ($result->num_rows > 0): ?>
+      <div class="space-y-6">
+        <?php while ($row = $result->fetch_assoc()): ?>
+          <div class="bg-white shadow p-6 rounded">
+            <h2 class="text-lg font-bold"><?= htmlspecialchars($row['job_title']) ?></h2>
+            <p class="text-sm text-gray-600">
+              Company: <?= htmlspecialchars($row['company_name']) ?> | Location: <?= htmlspecialchars($row['location']) ?>
+            </p>
+            <p class="text-sm">Salary: <?= htmlspecialchars($row['salary']) ?></p>
+            <p class="text-sm">Applied on: <?= htmlspecialchars($row['applied_at']) ?></p>
+            <p class="text-sm">Resume: 
+              <a href="../uploads/resumes/<?= urlencode($row['resume_path']) ?>" target="_blank" class="text-blue-600 underline">View</a>
+            </p>
+            <p class="mt-2 text-sm font-medium">Status: 
+              <span class="<?= 
+                $row['status'] === 'pending' ? 'text-yellow-600' : 
+                ($row['status'] === 'approved' ? 'text-green-600' : 'text-red-600') ?>">
+                <?= ucfirst($row['status']) ?>
+              </span>
+            </p>
+          </div>
+        <?php endwhile; ?>
+      </div>
+    <?php else: ?>
+      <p class="text-gray-500">You haven't applied to any jobs yet.</p>
+    <?php endif; ?>
+
+  </div>
+
 
 <?php if ($showModal): ?>
   <div class="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">

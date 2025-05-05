@@ -18,7 +18,7 @@
     .reject { background-color: #ff6b6b; }
   </style>
 </head>
-<body>
+<body class="bg-white font-sans min-h-screen">
 <?php
 $showModal = isset($_GET['showLogout']) && $_GET['showLogout'] === 'true';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
@@ -37,40 +37,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     </nav>
   </header>
 
-  <main class="p-4">
-    <table class="mb-4">
-      <thead>
-        <tr>
-          <th>Job Title</th>
-          <th>Organization</th>
-          <th>Details</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Retail Assistants</td>
-          <td>7-Eleven</td>
-          <td><button class="text-blue-600">View Details</button></td>
-          <td>Pending</td>
-          <td><input type="checkbox" checked class="action-checkbox" /></td>
-        </tr>
-        <tr>
-          <td>Sales Associate</td>
-          <td>Beper</td>
-          <td><button class="text-blue-600">View Details</button></td>
-          <td>Pending</td>
-          <td><input type="checkbox" checked class="action-checkbox" /></td>
-        </tr>
-      </tbody>
-    </table>
+  
 
-    <div class="buttons">
-      <button class="approve">Approve</button>
-      <button class="reject">Reject</button>
-    </div>
-  </main>
+  <?php
+include '../../controllers/connection.php';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['action'], $_POST['job_id'], $_POST['message'])) {
+        $job_id = $_POST['job_id'];
+        $action = $_POST['action'];
+        $message = $_POST['message'];
+        
+        // Fetch the organization ID to send the message to the correct organization
+        $stmt = $conn->prepare("SELECT organization_id FROM jobs_list WHERE id = ?");
+        $stmt->bind_param("i", $job_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $orgData = $result->fetch_assoc();
+        $organization_id = $orgData['organization_id'];
+
+        if ($action === 'approve') {
+            $stmt = $conn->prepare("UPDATE jobs_list SET status = 'approved' WHERE id = ?");
+            $stmt->bind_param("i", $job_id);
+            $stmt->execute();
+
+            // Send approval message
+            $stmt = $conn->prepare("INSERT INTO notifications_org (organization_id, job_id, message) VALUES (?, ?, ?)");
+            $stmt->bind_param("iis", $organization_id, $job_id, $message);
+            $stmt->execute();
+        } elseif ($action === 'reject') {
+            $stmt = $conn->prepare("UPDATE jobs_list SET status = 'rejected' WHERE id = ?");
+            $stmt->bind_param("i", $job_id);
+            $stmt->execute();
+
+            // Send rejection message
+            $stmt = $conn->prepare("INSERT INTO notifications_org (organization_id, job_id, message) VALUES (?, ?, ?)");
+            $stmt->bind_param("iis", $organization_id, $job_id, $message);
+            $stmt->execute();
+        }
+    }
+}
+
+// Get all pending jobs
+$result = $conn->query("SELECT * FROM jobs_list WHERE status = 'pending'");
+?>
+
+<h2 class="text-2xl font-semibold mb-6">Pending Job Listings</h2>
+
+<?php if ($result->num_rows > 0): ?>
+  <!-- The main structure -->
+<div class="grid gap-4">
+    <?php while ($row = $result->fetch_assoc()): ?>
+      <div class="bg-white p-4 rounded shadow space-y-2">
+        <h3 class="text-xl font-bold"><?php echo htmlspecialchars($row['job_title']); ?></h3>
+        <p><strong>Company:</strong> <?php echo htmlspecialchars($row['company_name']); ?></p>
+        <p><strong>Type:</strong> <?php echo htmlspecialchars($row['job_type']); ?></p>
+        <p><strong>Location:</strong> <?php echo htmlspecialchars($row['location']); ?></p>
+        <p><strong>Salary:</strong> <?php echo htmlspecialchars($row['salary']); ?></p>
+        <p><strong>Description:</strong> <?php echo nl2br(htmlspecialchars($row['job_description'])); ?></p>
+        <p><strong>Deadline:</strong> <?php echo htmlspecialchars($row['deadline']); ?></p>
+
+        <form method="POST" class="flex space-x-2 mt-2">
+          <input type="hidden" name="job_id" value="<?php echo $row['id']; ?>">
+          
+          <!-- Trigger Modal for Approve -->
+          <button type="button" class="px-3 py-1 bg-green-500 text-white rounded" onclick="showModal('approve', <?php echo $row['id']; ?>)">Approve</button>
+          
+          <!-- Trigger Modal for Reject -->
+          <button type="button" class="px-3 py-1 bg-red-500 text-white rounded" onclick="showModal('reject', <?php echo $row['id']; ?>)">Reject</button>
+        </form>
+      </div>
+    <?php endwhile; ?>
+</div>
+
+<?php else: ?>
+  <p class="text-gray-600">No pending jobs at the moment.</p>
+<?php endif; ?>
+
 
   <?php if ($showModal): ?>
 <div class="fixed inset-0 bg-black bg-opacity-30 z-50"></div>
@@ -83,5 +126,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
   </div>
 </div>
 <?php endif; ?>
+
+<!-- Modal HTML -->
+<div id="modal" class="fixed inset-0 bg-black bg-opacity-30 hidden z-50 flex items-center justify-center">
+  <div class="bg-white p-6 rounded-lg w-1/3">
+    <h2 class="text-xl mb-4">Enter Message</h2>
+    <form id="modalForm" method="POST">
+      <input type="hidden" name="job_id" id="modalJobId">
+      <input type="hidden" name="action" id="modalAction">
+      
+      <textarea name="message" id="message" class="w-full p-2 border rounded" rows="4" placeholder="Type your message here..." required></textarea>
+      
+      <div class="flex justify-end mt-4">
+        <button type="button" class="bg-gray-300 px-4 py-2 rounded text-black" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded ml-2">Send</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- JavaScript to handle Modal -->
+<script>
+function showModal(action, jobId) {
+  // Set form action and job ID
+  document.getElementById('modalAction').value = action;
+  document.getElementById('modalJobId').value = jobId;
+
+  // Show modal
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function closeModal() {
+  // Close modal
+  document.getElementById('modal').classList.add('hidden');
+}
+</script>
+
 </body>
 </html>

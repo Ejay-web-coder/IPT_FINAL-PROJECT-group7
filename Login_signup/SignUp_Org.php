@@ -30,7 +30,8 @@
         <input type="text" name="company_name" placeholder="Company Name" required class="w-full p-3 border rounded">
         <input type="text" name="organization_name" placeholder="Organization Name" required class="w-full p-3 border rounded">
         <input type="text" name="phone_number" placeholder="Phone Number" required class="w-full p-3 border rounded">
-        <input type="email" name="email" placeholder="Email Address" required class="w-full p-3 border rounded">
+        <input type="email" name="email" placeholder="Email" required class="w-full p-3 border rounded">
+        <input type="text" name="address" placeholder="Address" required class="w-full p-3 border rounded">
         <input type="password" name="password" placeholder="Create a Password" required class="w-full p-3 border rounded">
         <input type="password" name="confirm_password" placeholder="Confirm Password" required class="w-full p-3 border rounded">
 
@@ -59,7 +60,7 @@
     </div>
   </div>
     <?php
-    include '../connection/db_organization_login-signup.php';
+    include '../controllers/connection.php';
 
 
 // Handle form submission
@@ -68,24 +69,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $organization_name = $_POST['organization_name'];
     $phone_number = $_POST['phone_number'];
     $email = $_POST['email'];
+    $address = $_POST['address'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password
     $business_certificate = $_FILES['business_certificate']['name'];
     $company_logo = $_FILES['company_logo']['name'];
 
-    // Move uploaded files to a directory
-    move_uploaded_file($_FILES['business_certificate']['tmp_name'], "uploads/" . $business_certificate);
-    move_uploaded_file($_FILES['company_logo']['tmp_name'], "uploads/" . $company_logo);
+    $uploadDir = "uploads/";
 
-    // Insert into database
-    $sql = "INSERT INTO users (company_name, organization_name, phone_number, email, password, business_certificate, company_logo)
-            VALUES ('$company_name', '$organization_name', '$phone_number', '$email', '$password', '$business_certificate', '$company_logo')";
-
-    if ($conn->query($sql) === TRUE) {
-        echo "New record created successfully";
-    } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+    // Ensure the uploads folder exists
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true); // create folder if it doesn't exist
     }
-}
+    
+    // Handle business certificate upload
+    $businessCertTmp = $_FILES['business_certificate']['tmp_name'];
+    $businessCertName = uniqid() . '_' . basename($_FILES['business_certificate']['name']);
+    $businessCertPath = $uploadDir . $businessCertName;
+    
+    // Handle company logo upload
+    $companyLogoTmp = $_FILES['company_logo']['tmp_name'];
+    $companyLogoName = uniqid() . '_' . basename($_FILES['company_logo']['name']);
+    $companyLogoPath = $uploadDir . $companyLogoName;
+    
+    // Move the files
+    if (move_uploaded_file($businessCertTmp, $businessCertPath)) {
+      if ($companyLogoTmp && move_uploaded_file($companyLogoTmp, $companyLogoPath)) {
+          // Insert into the database
+          $sql = "INSERT INTO signup_org (company_name, organization_name, phone_number, email, password, address, business_certificate, company_logo)
+                  VALUES ('$company_name', '$organization_name', '$phone_number', '$email', '$password', '$address', '$businessCertName', '$companyLogoName')";
+  
+          if ($conn->query($sql) === TRUE) {
+              // Capture the newly inserted organization ID
+              $org_id = $conn->insert_id;
+  
+              // Optionally, store the organization ID in session (if needed for later use)
+              $_SESSION['organization_id'] = $org_id;
+  
+              echo "New record created successfully. Organization ID: " . $org_id;
+  
+          } else {
+              echo "Database Error: " . $conn->error;
+          }
+      } else {
+          echo "Failed to upload company logo.";
+      }
+  } else {
+      echo "Failed to upload business certificate.";
+  }
+  
+  }    
 
 $conn->close();
 ?>
