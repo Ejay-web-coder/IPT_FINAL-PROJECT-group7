@@ -87,7 +87,7 @@
               // Set session variables
               $_SESSION['user_id'] = $row['id'];
               $_SESSION['email'] = $row['email'];
-              header("Location: ../organization/Profile.php");
+              header("Location: ../organization/profile_requirement.php");
               exit();
           } else {
               $error_message = "Invalid password.";

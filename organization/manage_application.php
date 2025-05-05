@@ -30,9 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     <img src="../image/logo.png" alt="" class="w-20 h-auto"> <!-- Adjusted image size -->
   </div>
     <nav class="text-sm font-medium space-x-8">
-      <a href="Profile.php">Profile</a>
+    <a href="profile_requirement.php">Profile/Requirements</a>
       <a href="job_post.php">Jobs Post</a>
-      <a href="requirements.php">Requirements</a>
       <a href="manage_application.php" class="bg-green-500 text-white px-4 py-1 rounded-md font-semibold">Manage Application</a>
       <a href="notification_org.php">Notification</a>
       <a href="?showLogout=true" class="font-bold">Logout</a>

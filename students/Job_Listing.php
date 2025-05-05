@@ -62,9 +62,8 @@ if ($student_id) {
     </div>
     <nav class="text-sm font-medium space-x-6">
       <a href="Job_Listing.php" class="bg-orange-500 text-white px-4 py-1 rounded-md">Job Listing</a>
-      <a href="Requirements.php">Requirements</a>
       <a href="My_Application.php">My Applications</a>
-      <a href="Profile_Resume.php">Profile/Resume</a>
+      <a href="Profile_Requirements.php">Profile/Requirements</a>
       <a href="Notification.php">Notifications</a>
       <a href="?showLogout=true" class="font-bold">Logout</a>
     </nav>
