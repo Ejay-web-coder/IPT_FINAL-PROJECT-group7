@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>My Applications</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../view_c/js/tailwind.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     <nav class="text-sm font-medium space-x-6">
       <a href="Job_Listing.php">Job Listing</a>
       <a href="My_Application.php" class="bg-orange-500 text-white px-4 py-1 rounded-md">My Applications</a>
-      <a href="Profile_Requirements.php">Profile/Requirements</a>
+       <a href="Profile_Requirements.php">Profile/Requirements</a>
       <a href="Notification.php">Notifications</a>
       <a href="?showLogout=true" class="font-bold">Logout</a>
     </nav>

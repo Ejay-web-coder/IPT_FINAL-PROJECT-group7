@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute();
 
     // Redirect back to the manage application page
-    header("Location: manage_application.php");
+    header("Location: ../organization/manage_application.php");
     exit();
 }
 ?>

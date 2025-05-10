@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin Page</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../../view_c/js/tailwind.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
 </head>
 <body class="bg-gray-100 font-sans min-h-screen">
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
   exit;
 } */
 
-$student_id = $_SESSION['student_id'];
+/* $student_id = $_SESSION['student_id']; */
 
 
 // Handle Approve/Reject actions
@@ -102,13 +102,13 @@ $result = $conn->query($sql);
           <td class="p-2 border"><?= htmlspecialchars($org['organization_name']) ?></td>
           <td class="p-2 border"><?= htmlspecialchars($org['email']) ?></td>
           <td class="p-2 border">
-            <a href="../organization/uploads/<?= htmlspecialchars($org['bir_certification']) ?>" target="_blank" class="text-blue-600 underline">View</a>
+            <a href="../../organization/uploads/<?= htmlspecialchars($org['bir_certification']) ?>" target="_blank" class="text-blue-600 underline">View</a>
           </td>
           <td class="p-2 border">
-            <a href="../organization/uploads/<?= htmlspecialchars($org['business_permit']) ?>" target="_blank" class="text-blue-600 underline">View</a>
+            <a href="../../organization/uploads/<?= htmlspecialchars($org['business_permit']) ?>" target="_blank" class="text-blue-600 underline">View</a>
           </td>
           <td class="p-2 border">
-            <a href="../organization/uploads/<?= htmlspecialchars($org['tax_documents']) ?>" target="_blank" class="text-blue-600 underline">View</a>
+            <a href="../../organization/uploads/<?= htmlspecialchars($org['tax_documents']) ?>" target="_blank" class="text-blue-600 underline">View</a>
           </td>
           <td class="p-2 border text-sm text-gray-600">
             <?= isset($org['submitted_at']) ? date("M d, Y H:i", strtotime($org['submitted_at'])) : '—' ?>

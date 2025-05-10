@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Student Login</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../view_c/js/tailwind.js"></script>
 </head>
 <body class="min-h-screen flex items-center justify-center bg-cover bg-center relative" style="background-image: url('../image/online-job-search.jpeg');">
 

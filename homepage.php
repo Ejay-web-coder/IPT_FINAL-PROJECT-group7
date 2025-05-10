@@ -168,7 +168,7 @@
       </details>
     </section>
     <section>
-      <img alt="Illustration of hands holding a tablet showing a job offer document with a magnifying glass highlighting the text 'JOB OFFER', surrounded by papers and an envelope" class="img-fluid" height="280" src="image/JOB.avif" width="400" />
+      <img alt="Illustration of hands holding a tablet showing a job offer document with a magnifying glass highlighting the text 'JOB OFFER', surrounded by papers and an envelope" class="img-fluid" height="500" src="image/JOB.avif" width="400" />
     </section>
   </main>
 </body>

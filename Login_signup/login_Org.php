@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Organization Login</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../view_c/js/tailwind.js"></script>
   <style>
     body {
       background: url('../image/online-job-search.jpeg') no-repeat center center fixed;

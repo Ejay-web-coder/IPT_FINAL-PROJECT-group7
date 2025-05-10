@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Organization Profile & Requirements</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../view_c/js/tailwind.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
 </head>
 <body class="bg-white font-sans">
@@ -13,10 +13,7 @@
 session_start();
 include '../controllers/connection.php';
 
-/* if (!isset($_SESSION['email'])) {
-    header("Location: ../homepage.php");
-    exit();
-} */
+
 
 $email = $_SESSION['email'];
 
@@ -94,7 +91,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     <a href="profile_requirement.php" class="bg-green-500 text-white px-4 py-1 rounded-md font-semibold">Profile/Requirements</a>
     <a href="job_post.php">Jobs Post</a>
     <a href="manage_application.php">Manage Application</a>
-    <a href="notification_org.php">Notification</a>
     <a href="?showLogout=true" class="font-bold">Logout</a>
   </nav>
 </header>
@@ -102,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
 <!-- Profile Card -->
 <main class="max-w-4xl mx-auto mt-10 bg-white p-8 rounded-lg shadow flex gap-8">
   <div class="flex-shrink-0">
-    <img src="uploads/<?php echo htmlspecialchars($orgData['company_logo']); ?>" alt="Company Logo" class="w-40 h-40 object-cover rounded-full border border-gray-300 shadow">
+    <img src="../Login_signup/uploads/<?php echo htmlspecialchars($orgData['company_logo']); ?>" alt="Company Logo" class="w-40 h-40 object-cover rounded-full border border-gray-300 shadow">
   </div>
 
   <div class="flex-grow">
@@ -127,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
       <div class="col-span-2">
         <p class="font-semibold">Company Registration</p>
         <p class="bg-gray-100 p-2 rounded">
-          📂 <a href="uploads/<?php echo htmlspecialchars($orgData['business_certificate']); ?>" class="text-blue-600 underline">View Certificate</a>
+          📂 <a href="../Login_signup/uploads/<?php echo htmlspecialchars($orgData['business_certificate']); ?>" class="text-blue-600 underline">View Certificate</a>
         </p>
       </div>
     </div>

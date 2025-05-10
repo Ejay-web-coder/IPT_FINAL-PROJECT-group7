@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Job Board</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../view_c/js/tailwind.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
 </head>
 <body class="bg-white font-sans">
@@ -16,13 +16,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
 ?>
   <header class="bg-white shadow px-10 py-6 flex justify-between items-center">
     <div class="text-4xl font-extrabold">
-    <img src="../image/logo.png" alt="" class="w-20 h-auto"> <!-- Adjusted image size -->
+    <img src="../image/logo.png" alt="" class="w-20 h-auto"> 
   </div>
     <nav class="text-sm font-medium space-x-8">
     <a href="profile_requirement.php">Profile/Requirements</a>
       <a href="job_post.php" class="bg-green-500 text-white px-4 py-1 rounded-md font-semibold">Jobs Post</a>
       <a href="manage_application.php">Manage Application</a>
-      <a href="notification_org.php">Notification</a>
       <a href="?showLogout=true" class="font-bold">Logout</a>
     </nav>
   </header>
@@ -91,7 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             if ($stmt->execute()) {
                 $show_modal = true;
-                $modal_message = "Please wait for the approval for your vacant job.";
+                $modal_message = "Please wait for the approval of the admin.";
             }
              else {
                 echo "Error: " . $stmt->error;

@@ -29,7 +29,7 @@ $result = $stmt->get_result();
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Student Notifications</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../view_c/js/tailwind.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
 </head>
 
@@ -97,8 +97,8 @@ $result = $stmt->get_result();
           <div>
           <p class="text-sm message-text <?= $note['status'] === 'unread' ? 'font-semibold' : 'text-gray-600' ?>">
 
-  <?= nl2br(htmlspecialchars($note['message'])) ?>
-</p>
+            <?= nl2br(htmlspecialchars($note['message'])) ?>
+           </p>
 
             </p>
             <p class="text-xs text-gray-500 mt-1">
